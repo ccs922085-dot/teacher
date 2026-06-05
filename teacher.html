@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>교무실 호출 수신함</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        .call-card { border: 1px solid #ccc; padding: 15px; margin: 10px; border-radius: 10px; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>교무실 호출 목록</h1>
+    <div id="callContainer"></div>
+
+    <script>
+        // 파이어베이스 설정 (기존 앱 코드의 firebaseConfig를 그대로 복사해오세요)
+        const firebaseConfig = {
+            databaseURL: "본인의-파이어베이스-URL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 3단계: 실시간 데이터 가져오기 로직
+        const callContainer = document.getElementById('callContainer');
+
+        // 'calls/' 경로를 지켜보다가 데이터가 추가되면 실행
+        db.ref('calls/').on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            
+            // 화면에 새로운 호출 카드 추가
+            const div = document.createElement('div');
+            div.className = 'call-card';
+            div.innerHTML = `
+                <h3>${data.teacher} 선생님 호출</h3>
+                <p>학생: ${data.student}</p>
+                <p>시간: ${new Date().toLocaleTimeString()}</p>
+            `;
+            callContainer.prepend(div); // 최신 호출이 맨 위로 오게 함
+        });
+    </script>
+</body>
+</html>
